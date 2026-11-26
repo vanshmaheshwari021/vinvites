@@ -903,6 +903,119 @@ button { font: inherit; }
   color: var(--muted);
   font-size: 17px;
 }
+
+/* ---------- Traditional Hindi Wedding Matter in Hero Card ---------- */
+.inv-hindi-matter {
+  font-family: var(--hindi);
+  text-align: center;
+  margin: 18px 0 10px;
+}
+.inv-intro-lead {
+  font-size: clamp(14px, 2.6vw, 16.5px);
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+.inv-elders-lead {
+  font-size: clamp(17px, 3.2vw, 22px);
+  color: var(--burgundy);
+  font-weight: 700;
+  margin: 4px 0 2px;
+}
+.inv-relation-lead {
+  font-size: clamp(15px, 2.8vw, 18px);
+  color: var(--goldink);
+  font-weight: 600;
+  margin-bottom: 22px;
+}
+.hero-name-script {
+  font: 400 clamp(48px, 11vw, 98px)/1.02 var(--script) !important;
+  color: var(--burgundy) !important;
+  margin: 10px 0 6px !important;
+}
+.inv-couple-group {
+  margin: 16px 0;
+}
+.inv-name-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.inv-name-prefix {
+  font-size: clamp(20px, 4vw, 27px);
+  font-weight: 600;
+  color: var(--goldink);
+}
+.inv-name-main {
+  font-size: clamp(38px, 8.5vw, 56px);
+  font-weight: 800;
+  color: var(--burgundy);
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+  text-shadow: 0 1px 2px rgba(101, 13, 37, 0.08);
+}
+.inv-parent-line {
+  font-size: clamp(14px, 2.6vw, 16.5px);
+  color: var(--ink);
+  font-weight: 600;
+  margin: 3px 0;
+}
+.inv-grandparent-line {
+  font-size: clamp(13px, 2.4vw, 15px);
+  color: var(--muted);
+  margin: 2px 0;
+}
+.inv-lotus-divider {
+  margin: 16px auto;
+  color: var(--goldink);
+  display: flex;
+  justify-content: center;
+}
+.inv-bandhan-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 22px auto 14px;
+}
+.inv-bandhan-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--goldink);
+  color: #FFF9ED;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(147, 107, 52, 0.35);
+}
+.inv-bandhan-text {
+  font-size: clamp(28px, 5.8vw, 40px);
+  font-weight: 800;
+  color: var(--goldink);
+  letter-spacing: 1px;
+}
+.inv-auspicious-box {
+  margin: 22px auto 12px;
+  max-width: 720px;
+  padding: 16px 14px;
+  border-radius: 6px;
+  background: rgba(183, 154, 112, 0.09);
+  border: 1px solid rgba(183, 154, 112, 0.3);
+}
+.inv-auspicious-p {
+  font-size: clamp(14.5px, 2.7vw, 17.5px);
+  line-height: 1.85;
+  color: var(--burgundy);
+  font-weight: 600;
+  margin: 0;
+}
+
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
@@ -1839,17 +1952,53 @@ button { font: inherit; }
         
         <p class="hero-tag">॥ शुभ विवाह ॥</p>
         
-        <p style="font-family:var(--hindi); font-size:clamp(15px, 3.2vw, 17px); line-height:1.75; color:var(--muted); margin-top:10px;">
-          श्री परमपिता परमेश्वर एवं कुलदेवी की असीम अनुकम्पा से<br>
-          <strong>स्व. श्रीमती मेहती देवी एवं स्व. श्री रूपचन्द जी राठी</strong><br>
-          अपनी सुपौत्री
-        </p>
-        
-        <h1 class="hero-names">Nupur <span class="amp">&amp;</span> Kartik Ji</h1>
-        
-        <div class="hero-date-box">
-          <p class="d">Monday, 14 December 2026</p>
-          <p class="t">विक्रम संवत् 2083, मंगसिर सुदी पंचमी · सायं 7:00 बजे से</p>
+        <!-- Traditional Hindi Matter (Verbatim from User's Wedding Card Images) -->
+        <div class="inv-hindi-matter">
+          <p class="inv-intro-lead">श्री परमपिता परमेश्वर एवं कुलदेवी की असीम अनुकम्पा से</p>
+          <p class="inv-elders-lead">स्व. श्रीमती मेहती देवी एवं स्व. श्री रूपचन्द जी राठी</p>
+          <p class="inv-relation-lead">अपनी सुपौत्री</p>
+
+          <!-- Bride Details -->
+          <div class="inv-couple-group">
+            <h2 class="hero-name-script">Nupur</h2>
+            <p class="inv-parent-line">( सुपुत्री श्रीमती नीतु एवं श्री राजेश राठी )</p>
+            <p class="inv-grandparent-line">( सुदौहित्री स्व. श्रीमती भंवरी देवी जी एवं स्व. श्री बंशीलाल जी भूतड़ा )</p>
+          </div>
+
+          <!-- Ornate Lotus Divider -->
+          <div class="inv-lotus-divider" aria-hidden="true">
+            <svg viewBox="0 0 160 36" width="130" height="30" fill="none" stroke="currentColor">
+              <path d="M10 18 H58 M102 18 H150" stroke-width="0.9" opacity="0.6"/>
+              <path d="M80 6 C76 14 74 22 80 28 C86 22 84 14 80 6 Z" fill="currentColor" opacity="0.85"/>
+              <path d="M80 12 C72 15 67 22 71 27 C75 27 78 22 80 20" fill="currentColor" opacity="0.65"/>
+              <path d="M80 12 C88 15 93 22 89 27 C85 27 82 22 80 20" fill="currentColor" opacity="0.65"/>
+              <circle cx="80" cy="27" r="1.8" fill="currentColor"/>
+            </svg>
+          </div>
+
+          <!-- Groom Details -->
+          <div class="inv-couple-group">
+            <h2 class="hero-name-script">Kartik Ji</h2>
+            <p class="inv-parent-line">( सुपुत्र श्रीमती संगीता जी एवं श्री घनश्याम जी भट्टड़ )</p>
+            <p class="inv-grandparent-line">( सुपौत्र स्व. श्रीमती आंचुकी देवी जी एवं श्री शिवनारायण जी भट्टड़ )</p>
+          </div>
+
+          <!-- Dampatya Bandhan Badge -->
+          <div class="inv-bandhan-row">
+            <span class="inv-bandhan-badge">के</span>
+            <span class="inv-bandhan-text">दाम्पत्य बंधन</span>
+          </div>
+
+          <!-- Auspicious Invitation Text (Verbatim from Image 1) -->
+          <div class="inv-auspicious-box">
+            <p class="inv-auspicious-p">
+              विक्रम संवत् 2083, मिति मिंगसर सुदी पंचमी, सोमवार, दिनांक 14 दिसम्बर 2026 की शुभ मधुर मांगलिक<br>
+              वेला पर वर-वधु को शुभ आशीर्वाद प्रदान करने हेतु आपको सस्नेह सादर आमंत्रित करते हैं।
+            </p>
+          </div>
+        </div>
+
+        <div class="hero-date-box" style="margin-top:16px;">
           <p class="v">पुंगलिया रिसोर्ट (Pungaliya Resort)</p>
           <p class="c">दईजर, जोधपुर (राज.) · Daijar, Jodhpur, Rajasthan</p>
         </div>
@@ -2349,7 +2498,7 @@ button { font: inherit; }
       <h2>Nupur &amp; Kartik Ji</h2>
       <p class="closing-msg">
         "आपकी स्नेहिल उपस्थिति ही वर-वधू के लिए सबसे बड़ा उपहार एवं आशीर्वाद होगी।"<br>
-        — समस्त राठी एवं भट्टड़ परिवार
+        — समस्त राठी परिवार
       </p>
 
       <!-- WhatsApp Share Link -->
@@ -3096,14 +3245,14 @@ button { font: inherit; }
     // Share on WhatsApp
     const shareWaBtn = document.getElementById('share-wa-btn');
     if (shareWaBtn) {
-      const shareMsg = encodeURIComponent("You are cordially invited to the wedding celebrations of Nupur & Kartik on 13 & 14 December 2026 at Pungaliya Resort, Daijar, Jodhpur! View invitation: " + window.location.href);
+      const shareMsg = encodeURIComponent("You are cordially invited to the wedding celebrations of Nupur & Kartik on 13 & 14 December 2026 at Pungaliya Resort, Daijar, Jodhpur! View invitation: https://wedinnk.vercel.app/");
       shareWaBtn.href = `https://wa.me/?text=${shareMsg}`;
     }
 
     // Copy invitation link
     const copyLinkBtn = document.getElementById('copy-link-btn');
     if (copyLinkBtn) {
-      copyLinkBtn.addEventListener('click', () => copyText(window.location.href, copyLinkBtn));
+      copyLinkBtn.addEventListener('click', () => copyText('https://wedinnk.vercel.app/', copyLinkBtn));
     }
 
     // Lock scroll initially for envelope
