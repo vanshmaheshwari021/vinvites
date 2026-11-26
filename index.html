@@ -515,6 +515,73 @@ button { font: inherit; }
   50% { transform: scale(1.25); opacity: 1; }
 }
 
+/* ---------- Chotu Sa Minimal Mute / Unmute Button ---------- */
+.chotu-audio-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1005;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(45, 6, 16, 0.9);
+  border: 1.5px solid var(--champ);
+  color: var(--champ);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 10px rgba(212, 175, 55, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  padding: 0;
+  margin: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.chotu-audio-btn:hover {
+  transform: scale(1.08);
+  border-color: #FFF2CE;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 16px rgba(248, 222, 148, 0.6);
+}
+.chotu-audio-btn:active {
+  transform: scale(0.92);
+}
+.chotu-audio-btn svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+.chotu-audio-btn .icon-playing {
+  display: none;
+}
+.chotu-audio-btn .icon-muted {
+  display: block;
+}
+.chotu-audio-btn.is-playing .icon-playing {
+  display: block;
+  animation: audioPulse 1.8s ease-in-out infinite;
+}
+.chotu-audio-btn.is-playing .icon-muted {
+  display: none;
+}
+@keyframes audioPulse {
+  0%, 100% { opacity: 0.85; transform: scale(0.96); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+@media (max-width: 640px) {
+  .chotu-audio-btn {
+    bottom: max(16px, env(safe-area-inset-bottom, 16px));
+    right: max(14px, env(safe-area-inset-right, 14px));
+    width: 38px;
+    height: 38px;
+  }
+  .chotu-audio-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
 /* ---------- Navigation ---------- */
 .nav {
   position: sticky;
@@ -1708,6 +1775,23 @@ button { font: inherit; }
 <!-- Floating Sky Lanterns Stage -->
 <div class="lantern-stage" id="lantern-stage" aria-hidden="true"></div>
 
+<!-- Background Wedding Flute / Instrumental Music (Default Sound Playing, Continuous Loop) -->
+<audio id="bg-audio" src="music.mp3" preload="auto" loop autoplay playsinline webkit-playsinline></audio>
+
+<!-- Chotu Sa Minimal Mute / Unmute Floating Button (Default Playing State) -->
+<button class="chotu-audio-btn is-playing" id="chotu-audio-btn" type="button" aria-label="Mute Music" title="Mute Music">
+  <svg class="icon-playing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+  </svg>
+  <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+    <line x1="23" y1="9" x2="17" y2="15"></line>
+    <line x1="17" y1="9" x2="23" y2="15"></line>
+  </svg>
+</button>
+
 <!-- Main Website Container -->
 <div id="site" inert aria-hidden="true">
 
@@ -2374,10 +2458,131 @@ button { font: inherit; }
     }
   }
 
+  // =========================================================================
+  // 2.5 BACKGROUND WEDDING MUSIC CONTROLLER (Continuous Seamless Loop)
+  // =========================================================================
+  let audioPlayer = null;
+  let isAudioPlaying = true; // Default sound ON
+  let userMutedManually = false;
+
+  function updateAudioButton(playing) {
+    const btn = document.getElementById('chotu-audio-btn');
+    if (!btn) return;
+    if (playing) {
+      btn.classList.add('is-playing');
+      btn.setAttribute('title', 'Mute Music');
+      btn.setAttribute('aria-label', 'Mute Music');
+    } else {
+      btn.classList.remove('is-playing');
+      btn.setAttribute('title', 'Unmute Music');
+      btn.setAttribute('aria-label', 'Unmute Music');
+    }
+  }
+
+  function playMusic() {
+    if (!audioPlayer) audioPlayer = document.getElementById('bg-audio');
+    if (!audioPlayer) return;
+
+    audioPlayer.volume = 0.85;
+    audioPlayer.muted = false;
+    const playPromise = audioPlayer.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        isAudioPlaying = true;
+        updateAudioButton(true);
+      }).catch(err => {
+        // Autoplay policy waiting for user gesture
+        console.warn('Autoplay waiting for user gesture:', err);
+      });
+    }
+  }
+
+  function pauseMusic() {
+    if (!audioPlayer) audioPlayer = document.getElementById('bg-audio');
+    if (audioPlayer) {
+      audioPlayer.pause();
+    }
+    isAudioPlaying = false;
+    updateAudioButton(false);
+  }
+
+  function toggleAudio() {
+    if (!audioPlayer) audioPlayer = document.getElementById('bg-audio');
+    if (!audioPlayer) return;
+
+    if (audioPlayer.paused) {
+      userMutedManually = false;
+      playMusic();
+    } else {
+      userMutedManually = true;
+      pauseMusic();
+    }
+  }
+
+  function initMusicPlayer() {
+    audioPlayer = document.getElementById('bg-audio');
+    if (!audioPlayer) return;
+
+    audioPlayer.volume = 0.85;
+    audioPlayer.loop = true;
+    audioPlayer.muted = false;
+
+    // Default state: Sound ON / Playing
+    isAudioPlaying = true;
+    updateAudioButton(true);
+
+    // Explicit loop fallback for mobile browser engines where audio loop ends
+    audioPlayer.addEventListener('ended', () => {
+      audioPlayer.currentTime = 0;
+      audioPlayer.play().catch(() => {});
+    });
+
+    audioPlayer.addEventListener('play', () => {
+      isAudioPlaying = true;
+      updateAudioButton(true);
+    });
+
+    audioPlayer.addEventListener('pause', () => {
+      if (userMutedManually) {
+        isAudioPlaying = false;
+        updateAudioButton(false);
+      }
+    });
+
+    const chotuBtn = document.getElementById('chotu-audio-btn');
+    if (chotuBtn) {
+      chotuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleAudio();
+      });
+    }
+
+    // Attempt autoplay immediately
+    playMusic();
+
+    // Auto-unlock audio on ANY first user gesture (touch, click, scroll, keydown)
+    const unlockGesture = () => {
+      if (!userMutedManually) {
+        playMusic();
+      }
+    };
+
+    window.addEventListener('pointerdown', unlockGesture, { passive: true });
+    window.addEventListener('touchstart', unlockGesture, { passive: true });
+    window.addEventListener('click', unlockGesture, { passive: true });
+    window.addEventListener('keydown', unlockGesture, { passive: true });
+    window.addEventListener('wheel', unlockGesture, { passive: true });
+  }
+
   function openEnvelope(instant = false) {
     const env = document.getElementById('env');
     if (!env || env.dataset.opened) return;
     env.dataset.opened = 'true';
+
+    // Start continuous divine music loop synchronously on user interaction
+    if (!userMutedManually) {
+      playMusic();
+    }
     
     const site = document.getElementById('site');
     site.inert = false;
@@ -2795,6 +3000,7 @@ button { font: inherit; }
 
   // 10. BOOT EVERYTHING
   function boot() {
+    initMusicPlayer();
     drawFlapLace();
     window.addEventListener('resize', debounce(drawFlapLace, 120));
     
