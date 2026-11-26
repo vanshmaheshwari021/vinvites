@@ -153,7 +153,9 @@ button { font: inherit; }
   top: 6svh;
   width: min(86vw, 530px);
   height: 80svh;
-  transform: translate(-50%, 100svh);
+  transform: translate(-50%, 15px) scale(0.86);
+  opacity: 0;
+  filter: blur(14px) brightness(1.6);
   background: var(--ivory) var(--noise);
   color: var(--ink);
   border-radius: 4px;
@@ -163,7 +165,8 @@ button { font: inherit; }
   align-items: center;
   padding: 38px 24px;
   text-align: center;
-  transition: transform 2.2s cubic-bezier(0.16, 1, 0.3, 1) 1.2s;
+  transition: transform 1.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.4s ease, filter 1.5s ease, box-shadow 1.8s ease;
+  z-index: 6;
 }
 .env-card::after {
   content: "";
@@ -332,8 +335,87 @@ button { font: inherit; }
 .env.opening .env-seal::before { opacity: 1; transform: scale(2.2); transition: transform 0.8s ease, opacity 0.4s ease; }
 .env.opening .env-seal::after { animation: none; opacity: 0; }
 .env.opening .env-flap { transform: rotateX(180deg); opacity: 0; }
-.env.opening .env-card { transform: translate(-50%, 0); }
+.env.opening .env-card {
+  transform: translate(-50%, 0) scale(1);
+  opacity: 1;
+  filter: blur(0px) brightness(1);
+  box-shadow: 0 0 55px rgba(245, 215, 140, 0.5), 0 16px 40px rgba(0, 0, 0, 0.5);
+  transition-delay: 1.5s;
+}
 .env.gone { opacity: 0; pointer-events: none; transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* Magical Loading Shimmer Aura (Between Flap Open & Card Appearance) */
+.env-magic-loader {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 5;
+  transition: opacity 0.6s ease;
+}
+.magic-ring {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(245, 215, 140, 0.75);
+  box-shadow: 0 0 35px rgba(212, 175, 55, 0.45), inset 0 0 25px rgba(255, 235, 180, 0.35);
+  display: grid;
+  place-items: center;
+  animation: magicSpin 3.5s linear infinite;
+  position: relative;
+}
+.magic-ring::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 50%;
+  border: 1px dotted rgba(255, 240, 200, 0.8);
+  animation: magicSpinRev 2.2s linear infinite;
+}
+.magic-sparkle {
+  font-size: 26px;
+  color: #FFF2D1;
+  text-shadow: 0 0 16px rgba(255, 230, 160, 0.95), 0 0 30px rgba(212, 175, 55, 0.85);
+  animation: pulseGlow 1.2s ease-in-out infinite alternate;
+}
+.magic-text {
+  font-family: var(--display);
+  font-size: 13.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #F8EAD0;
+  margin-top: 16px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+  opacity: 0.92;
+}
+@keyframes magicSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes magicSpinRev {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+@keyframes pulseGlow {
+  0% { transform: scale(0.85); opacity: 0.7; }
+  100% { transform: scale(1.18); opacity: 1; }
+}
+
+.env.opening .env-magic-loader {
+  opacity: 1;
+  transition: opacity 0.5s ease 0.6s;
+}
+.env.card-revealed .env-magic-loader {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(1.25);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
 
 /* ---------- Falling Petals (Feature 5.10) ---------- */
 .petals-layer {
@@ -408,22 +490,25 @@ button { font: inherit; }
   position: fixed;
   top: 42vh;
   left: 0;
-  width: 64px;
-  height: 64px;
+  width: 54px;
+  height: 54px;
   pointer-events: none;
   z-index: 18;
   transform: translate(-50%, -50%);
-  opacity: 0.72;
+  opacity: 0.95;
   transition: transform 0.08s linear;
 }
 .plane-heart {
   position: absolute;
-  left: -8px;
-  top: 26px;
-  font-size: 14px;
-  color: #E24B66;
-  filter: drop-shadow(0 0 4px rgba(226,75,102,0.8));
-  animation: heartPulse 1.2s ease-in-out infinite;
+  left: -6px;
+  top: 19px;
+  font-size: 13px;
+  color: #F8E3B6;
+  filter: drop-shadow(0 0 6px rgba(248, 227, 182, 0.95));
+  animation: heartPulse 1.4s ease-in-out infinite;
+}
+#flight-travel-path {
+  filter: drop-shadow(0 0 6px rgba(255, 245, 225, 0.5));
 }
 @keyframes heartPulse {
   0%, 100% { transform: scale(0.9); opacity: 0.8; }
@@ -687,6 +772,9 @@ button { font: inherit; }
 .crest text {
   font-family: var(--script);
   fill: var(--burgundy);
+}
+.closing .crest text {
+  fill: var(--champ);
 }
 .crest .amp {
   font-family: var(--display);
@@ -1502,6 +1590,15 @@ button { font: inherit; }
 <!-- 5.1 OPENING REVEAL: LUXURY BURGUNDY LACE ENVELOPE -->
 <div class="env" id="env" role="dialog" aria-modal="true" aria-label="Wedding Invitation Envelope">
   <div class="env-inside"></div>
+  
+  <!-- Magical Golden Shimmer Loading Aura (Between Flap Open & Card Appearance) -->
+  <div class="env-magic-loader" id="env-magic-loader" aria-hidden="true">
+    <div class="magic-ring">
+      <span class="magic-sparkle">✦</span>
+    </div>
+    <span class="magic-text">Opening Invitation</span>
+  </div>
+
   <div class="env-card" aria-hidden="true">
     <p class="env-card-shloka">॥ श्री गणेशाय नमः ॥<br>वक्रतुण्ड महाकाय, सूर्यकोटि समप्रभः ।<br>निर्विघ्नं कुरु मे देव, सर्व कार्येषु सर्वदा ॥</p>
     <svg class="crest" viewBox="0 0 160 160" style="width:90px;">
@@ -1567,23 +1664,44 @@ button { font: inherit; }
 <!-- 5.12 CANDLE-GLOW CURSOR CANVAS -->
 <canvas id="glow-canvas"></canvas>
 
-<!-- 5.9 PAPER-PLANE FLIGHT PATH OVERLAY -->
+<!-- 5.9 FLOATING ROSE PETAL & LIGHT-RAY PATH OVERLAY -->
 <div class="flight-svg-wrap" id="flight-svg-wrap" aria-hidden="true">
   <svg id="flight-svg">
-    <path id="flight-base-path" fill="none" stroke="#B79A70" stroke-width="2.6" stroke-dasharray="3.4 14" stroke-opacity="0.38"/>
-    <path id="flight-travel-path" fill="none" stroke="#D4AF37" stroke-width="2.6" stroke-dasharray="12 6" stroke-opacity="0.85"/>
+    <!-- Subtle Stardust Guide Path -->
+    <path id="flight-base-path" fill="none" stroke="#FFECCC" stroke-width="1.3" stroke-dasharray="2 12" stroke-opacity="0.18"/>
+    <!-- Luminous Light-Ray Travelled Path -->
+    <path id="flight-travel-path" fill="none" stroke="#FFF5DE" stroke-width="1.8" stroke-dasharray="8 6" stroke-linecap="round" stroke-opacity="0.45"/>
   </svg>
 </div>
 
-<!-- Paper Plane Element Riding the Flight Path -->
+<!-- Floating Golden Petal Element Riding the Light-Ray Path -->
 <div class="plane-rider" id="plane-rider" aria-hidden="true">
-  <span class="plane-heart">❤</span>
-  <svg viewBox="0 0 68 68" width="64" height="64" style="filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));">
-    <!-- Origami Paper Plane in Champagne Gold & Wine -->
-    <polygon points="6,34 62,6 38,62 30,40" fill="#E8D1A7" stroke="#8E6B39" stroke-width="1.2"/>
-    <polygon points="30,40 62,6 38,62" fill="#D3B480" stroke="#8E6B39" stroke-width="1.2"/>
-    <polygon points="30,40 38,62 46,44" fill="#650D25" opacity="0.85"/>
-    <line x1="30" y1="40" x2="62" y2="6" stroke="#FFFFFF" stroke-width="1.2" opacity="0.6"/>
+  <span class="plane-heart">✦</span>
+  <svg viewBox="0 0 64 64" width="52" height="52" style="filter: drop-shadow(0 4px 12px rgba(212, 175, 55, 0.55));">
+    <defs>
+      <linearGradient id="goldPetalGrad" x1="0%" y1="50%" x2="100%" y2="50%">
+        <stop offset="0%" stop-color="#FFF6D8"/>
+        <stop offset="25%" stop-color="#F8DE94"/>
+        <stop offset="65%" stop-color="#DCAC4E"/>
+        <stop offset="100%" stop-color="#9E6E20"/>
+      </linearGradient>
+      <linearGradient id="goldPetalVein" x1="0%" y1="50%" x2="100%" y2="50%">
+        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9"/>
+        <stop offset="50%" stop-color="#FFF5D6" stop-opacity="0.45"/>
+        <stop offset="100%" stop-color="#9E6E20" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <!-- Organic Velvet Golden Petal -->
+    <path d="M6 32 C16 16 34 10 50 14 C59 17 62 25 62 32 C62 39 59 47 50 50 C34 54 16 48 6 32 Z" fill="url(#goldPetalGrad)"/>
+    <!-- Delicate Central Gold Vein -->
+    <path d="M8 32 Q34 30 58 32" fill="none" stroke="url(#goldPetalVein)" stroke-width="1.2" stroke-linecap="round"/>
+    <!-- Lateral Whispering Veins -->
+    <path d="M22 31 Q34 22 46 17" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="0.8"/>
+    <path d="M22 33 Q34 42 46 47" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="0.8"/>
+    <path d="M36 31 Q45 25 54 22" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.7"/>
+    <path d="M36 33 Q45 39 54 42" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.7"/>
+    <!-- Translucent Gentle Sheen Highlight -->
+    <path d="M10 32 C18 20 34 14 48 18 C34 24 20 28 10 32 Z" fill="rgba(255,255,255,0.45)"/>
   </svg>
 </div>
 
@@ -1775,7 +1893,7 @@ button { font: inherit; }
         
         <div style="font-family:var(--hindi); margin-top:22px; line-height:1.8; color:var(--champ);">
           <p style="font-size:clamp(15px, 3.2vw, 18px); font-weight:600; letter-spacing:0.04em;">
-            ॥ श्री सच्चियाय माताय नमः ॥ &nbsp; ॥ श्री गणेशाय नमः ॥ &nbsp; ॥ श्री हड़मन्ते नमः ॥
+            ॥ श्री सच्चियाय माताय नमः ॥ &nbsp; ॥ श्री गणेशाय नमः ॥ &nbsp; ॥ श्री हनुमन्ते नमः ॥
           </p>
           <p style="font-size:clamp(14px, 3vw, 16px); color:#F1DFC0; margin-top:6px;">
             विघ्न हरण मंगल करण गणनायक गणराज ।<br>
@@ -2141,7 +2259,7 @@ button { font: inherit; }
       <svg class="crest" viewBox="0 0 160 160" style="width:110px; margin:0 auto; color:var(--champ);">
         <circle cx="80" cy="80" r="56" fill="none" stroke="currentColor" stroke-width="0.9"/>
         <circle cx="80" cy="80" r="51" fill="none" stroke="currentColor" stroke-width="0.7" stroke-dasharray="1 3.4"/>
-        <text x="80" y="96" text-anchor="middle" font-size="50">N<tspan font-family="'Cormorant Garamond', serif" font-style="italic" font-size="26" fill="var(--champ)">&amp;</tspan>K</text>
+        <text x="80" y="96" text-anchor="middle" font-size="50" fill="var(--champ)">N<tspan font-family="'Cormorant Garamond', serif" font-style="italic" font-size="26" fill="var(--champ)">&amp;</tspan>K</text>
       </svg>
       
       <h2>Nupur &amp; Kartik Ji</h2>
@@ -2277,16 +2395,22 @@ button { font: inherit; }
     }
     
     env.classList.add('opening');
+    
+    // Magical reveal of card after shimmer aura
+    setTimeout(() => {
+      env.classList.add('card-revealed');
+    }, 1500);
+
     setTimeout(() => {
       launchPetals(window.innerWidth < 640 ? 14 : 26);
-    }, 800);
+    }, 1800);
     
     // Smooth slow transition: envelope fades out after card has settled
     setTimeout(() => {
       env.classList.add('gone');
-    }, 3600);
+    }, 3900);
     
-    setTimeout(finalize, 4800);
+    setTimeout(finalize, 5100);
   }
 
   // 3. LIVE COUNTDOWN TIMER (+05:30 IST)
@@ -2683,13 +2807,48 @@ button { font: inherit; }
     if (openBtn) openBtn.addEventListener('click', () => openEnvelope(false));
     if (skipBtn) skipBtn.addEventListener('click', () => openEnvelope(true));
     
-    // Keyboard unlock
-    window.addEventListener('keydown', e => {
+    // Trigger open on ANY scroll up/down (wheel, touchpad)
+    window.addEventListener('wheel', e => {
       const env = document.getElementById('env');
-      if (env && !env.dataset.opened && (e.key === 'Enter' || e.key === ' ')) {
+      if (env && !env.dataset.opened && Math.abs(e.deltaY) > 3) {
         openEnvelope(false);
       }
+    }, { passive: true });
+
+    // Trigger open on touch swipe up or down (mobile)
+    let touchStartY = 0;
+    window.addEventListener('touchstart', e => {
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    window.addEventListener('touchmove', e => {
+      const env = document.getElementById('env');
+      if (env && !env.dataset.opened) {
+        const delta = Math.abs(e.touches[0].clientY - touchStartY);
+        if (delta > 12) {
+          openEnvelope(false);
+        }
+      }
+    }, { passive: true });
+
+    // Keyboard navigation unlock
+    window.addEventListener('keydown', e => {
+      const env = document.getElementById('env');
+      if (env && !env.dataset.opened) {
+        if (['Enter', ' ', 'ArrowDown', 'ArrowUp', 'PageDown', 'PageUp'].includes(e.key)) {
+          openEnvelope(false);
+        }
+      }
     });
+
+    // Tap anywhere on envelope screen to open
+    const envDialog = document.getElementById('env');
+    if (envDialog) {
+      envDialog.addEventListener('click', e => {
+        if (e.target.id === 'env-skip') return;
+        openEnvelope(false);
+      });
+    }
 
     // Mobile Nav Toggle
     const navToggle = document.getElementById('nav-toggle');
