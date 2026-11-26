@@ -2611,8 +2611,21 @@ button { font: inherit; }
   // 2.5 BACKGROUND WEDDING MUSIC CONTROLLER (Continuous Seamless Loop)
   // =========================================================================
   let audioPlayer = null;
-  let isAudioPlaying = true; // Default sound ON
+  let isAudioPlaying = false;
   let userMutedManually = false;
+  let audioCtx = null;
+
+  function ensureAudioContext() {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        if (!audioCtx) audioCtx = new AudioCtx();
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      }
+    } catch(e) {}
+  }
 
   function updateAudioButton(playing) {
     const btn = document.getElementById('chotu-audio-btn');
@@ -2632,16 +2645,20 @@ button { font: inherit; }
     if (!audioPlayer) audioPlayer = document.getElementById('bg-audio');
     if (!audioPlayer) return;
 
+    ensureAudioContext();
     audioPlayer.volume = 0.85;
     audioPlayer.muted = false;
+
     const playPromise = audioPlayer.play();
     if (playPromise !== undefined) {
       playPromise.then(() => {
         isAudioPlaying = true;
         updateAudioButton(true);
       }).catch(err => {
-        // Autoplay policy waiting for user gesture
+        // Autoplay policy waiting for user gesture (e.g. Android Chrome requires touchend/click)
         console.warn('Autoplay waiting for user gesture:', err);
+        isAudioPlaying = false;
+        updateAudioButton(false);
       });
     }
   }
@@ -2676,10 +2693,6 @@ button { font: inherit; }
     audioPlayer.loop = true;
     audioPlayer.muted = false;
 
-    // Default state: Sound ON / Playing
-    isAudioPlaying = true;
-    updateAudioButton(true);
-
     // Explicit loop fallback for mobile browser engines where audio loop ends
     audioPlayer.addEventListener('ended', () => {
       audioPlayer.currentTime = 0;
@@ -2709,18 +2722,19 @@ button { font: inherit; }
     // Attempt autoplay immediately
     playMusic();
 
-    // Auto-unlock audio on ANY first user gesture (touch, click, scroll, keydown)
+    // Auto-unlock audio on ANY first user gesture
+    // Critical for Android Chrome: Chromium strictly requires 'touchend', 'pointerup', or 'click'
+    // (Chromium explicitly ignores 'touchstart' and 'touchmove' for audio user activation)
     const unlockGesture = () => {
-      if (!userMutedManually) {
+      if (!userMutedManually && audioPlayer && audioPlayer.paused) {
         playMusic();
       }
     };
 
-    window.addEventListener('pointerdown', unlockGesture, { passive: true });
-    window.addEventListener('touchstart', unlockGesture, { passive: true });
-    window.addEventListener('click', unlockGesture, { passive: true });
-    window.addEventListener('keydown', unlockGesture, { passive: true });
-    window.addEventListener('wheel', unlockGesture, { passive: true });
+    ['click', 'touchend', 'pointerup', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
+      window.addEventListener(evt, unlockGesture, { passive: true });
+      document.addEventListener(evt, unlockGesture, { passive: true });
+    });
   }
 
   function openEnvelope(instant = false) {
@@ -3153,14 +3167,26 @@ button { font: inherit; }
     drawFlapLace();
     window.addEventListener('resize', debounce(drawFlapLace, 120));
     
-    // Envelope open listeners
+    // Envelope open listeners (support both click and touch release for mobile)
     const seal = document.getElementById('env-seal');
     const openBtn = document.getElementById('env-open');
     const skipBtn = document.getElementById('env-skip');
     
-    if (seal) seal.addEventListener('click', () => openEnvelope(false));
-    if (openBtn) openBtn.addEventListener('click', () => openEnvelope(false));
-    if (skipBtn) skipBtn.addEventListener('click', () => openEnvelope(true));
+    const handleOpenClick = () => openEnvelope(false);
+    const handleSkipClick = () => openEnvelope(true);
+
+    if (seal) {
+      seal.addEventListener('click', handleOpenClick);
+      seal.addEventListener('touchend', handleOpenClick, { passive: true });
+    }
+    if (openBtn) {
+      openBtn.addEventListener('click', handleOpenClick);
+      openBtn.addEventListener('touchend', handleOpenClick, { passive: true });
+    }
+    if (skipBtn) {
+      skipBtn.addEventListener('click', handleSkipClick);
+      skipBtn.addEventListener('touchend', handleSkipClick, { passive: true });
+    }
     
     // Trigger open on ANY scroll up/down (wheel, touchpad)
     window.addEventListener('wheel', e => {
@@ -3172,8 +3198,10 @@ button { font: inherit; }
 
     // Trigger open on touch swipe up or down (mobile)
     let touchStartY = 0;
+    let didSwipeToOpen = false;
     window.addEventListener('touchstart', e => {
       touchStartY = e.touches[0].clientY;
+      didSwipeToOpen = false;
     }, { passive: true });
 
     window.addEventListener('touchmove', e => {
@@ -3181,8 +3209,17 @@ button { font: inherit; }
       if (env && !env.dataset.opened) {
         const delta = Math.abs(e.touches[0].clientY - touchStartY);
         if (delta > 12) {
+          didSwipeToOpen = true;
           openEnvelope(false);
         }
+      }
+    }, { passive: true });
+
+    // When touch swipe completes, touchend provides a valid user gesture on Android Chrome to start music!
+    window.addEventListener('touchend', () => {
+      if (didSwipeToOpen && !userMutedManually) {
+        playMusic();
+        didSwipeToOpen = false;
       }
     }, { passive: true });
 
@@ -3203,6 +3240,10 @@ button { font: inherit; }
         if (e.target.id === 'env-skip') return;
         openEnvelope(false);
       });
+      envDialog.addEventListener('touchend', e => {
+        if (e.target.id === 'env-skip') return;
+        openEnvelope(false);
+      }, { passive: true });
     }
 
     // Mobile Nav Toggle
